@@ -4,8 +4,8 @@ const config = {
     },
 
     baseAPIUrl: {
-        $default: 'http://178.128.90.202:5000',//'http://localhost:5000',
-        production: 'http://178.128.90.202:5000',//'http://localhost:5000',
+        $default: 'http://localhost:5000',
+        production: 'http://localhost:5000',
     }
 }
 

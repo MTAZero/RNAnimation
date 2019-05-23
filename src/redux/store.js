@@ -5,10 +5,10 @@ import createSagaMiddleware from 'redux-saga';
 import reducers from '../redux/reducers';
 import rootSaga from '../redux/sagas';
 
-const history = createHistory();
+//const history = createHistory();
 const sagaMiddleware = createSagaMiddleware();
-const routeMiddleware = routerMiddleware(history);
-const middleware = [routeMiddleware, sagaMiddleware];
+//const routeMiddleware = routerMiddleware(history);
+const middleware = [sagaMiddleware];
 
 const composeEnhancers =
   typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
@@ -26,5 +26,5 @@ const store = createStore(
 );
 
 sagaMiddleware.run(rootSaga);
-export {store, history};
+export {store};
 

@@ -1,9 +1,17 @@
 import React, {Component} from 'react';
 import {Text, View, StyleSheet, Image, Animated} from 'react-native';
-import axios from 'axios';
+//import {createStackNavigator, createAppContainer} from 'react-navigation';
 
 // api
 import {getNews} from './services/api/news.api';
+import actions from './redux/home/actions';
+
+// component
+// import Screen1 from './app/ListGirlScreen';
+// import Screen2 from './app/Screen2';
+// import Screen3 from './app/Screen3';
+// import HocSinh from './HocSinh';
+import { connect } from 'react-redux';
 
 const styles = StyleSheet.create({
     mainMenu:{
@@ -12,8 +20,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'black',
         borderStyle: 'solid',
-        // justifyContent: 'center',
-        // alignItems: 'center'
+        //justifyContent: 'center',
+        //alignItems: 'center'
     },
     text: {
         color: 'green',
@@ -24,7 +32,27 @@ const styles = StyleSheet.create({
         height: 120,
         borderRadius: 4,
     }
-})
+});
+
+// const AppNavigator = createStackNavigator(
+//     {
+//         Home: {
+//             screen: Screen1,
+//             header: "Home"
+//         },
+//         Screen2: {
+//             screen: Screen2
+//         },
+//         Screen3: {
+//             screen: Screen3
+//         }
+//     },
+//     {
+//         initialRouteName: "Home"
+//     }
+// );
+
+// export default createAppContainer(AppNavigator);
 
 class App extends Component{
 
@@ -35,7 +63,7 @@ class App extends Component{
             y: new Animated.Value(0),
             x2: new Animated.Value(10),
             rotate: new Animated.Value(0),
-            news: []
+            count: 0
         }
     }
 
@@ -44,13 +72,13 @@ class App extends Component{
         // let animation1 = Animated.sequence([
         //     Animated.timing(
         //         this.state.y,{
-        //             toValue: 250,
+        //             toValue: 0,
         //             duration: 2000
         //         }
         //     ),
         //     Animated.timing(
         //         this.state.x,{
-        //             toValue: 550,
+        //             toValue: 0,
         //             duration: 2000
         //         }                
         //     )
@@ -79,7 +107,7 @@ class App extends Component{
             Animated.timing(
                 this.state.y,{
                     toValue: 0,
-                    duration: 1500
+                    duration: 2000
                 }
             ),
         ]);
@@ -93,7 +121,7 @@ class App extends Component{
             Animated.timing(
                 this.state.y,{
                     toValue: 250,
-                    duration: 1500
+                    duration: 2000
                 }
             ),
         ]);
@@ -111,12 +139,12 @@ class App extends Component{
             animation3.start(()=>{this.startAnimation()});
     }
 
-    componentDidMount(){
+    componentDidMount = async() => {
         this.startAnimation();
+        this.props.loadListNews();
     }
 
     render(){
-        console.log(this.state.y.__getValue());
         const RotateData = this.state.rotate.interpolate({
             inputRange: [0, 1],
             outputRange: ['0deg', '360deg'],
@@ -140,13 +168,16 @@ class App extends Component{
                 />
 
                 {
-                    this.state.news.map((item, index) => {
+                    this.props.news.map((item, index) => {
+                        if (item.urlToImage == null) return;
+                        if (index>=4) return;
                         return (
                             <Animated.Image 
                                 style={{
                                     ...styles.image,
                                     marginTop: 10,
-                                    marginLeft: this.state.y
+                                    marginLeft: this.state.y,
+                                    transform: [{ rotate: RotateData}],
                                 }} 
                                 key={index} source={{uri: item.urlToImage}}
                             />
@@ -158,4 +189,18 @@ class App extends Component{
     }
 }
 
-export default App;
+const mapStateToProp = (state) => {
+    return {
+        news: state.home.news
+    }
+}
+
+const mapDispatchToProp = (dispatch) => {
+    return {
+        loadListNews: () => {
+            dispatch(actions.action.loadListNews());
+        }
+    }
+}
+
+export default connect(mapStateToProp, mapDispatchToProp)(App);
